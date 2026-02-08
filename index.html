@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Basic page info (text encoding, mobile-friendly layout, page title) -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Haunted Spot — Nameless Squad</title>
+
+  <!-- Load the font used on the page -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" />
+
+  <!-- Load the website styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body id="top">
+  <header class="site-header">
+    <div class="header-inner">
+      <!-- Studio / website name -->
+      <div class="studio-name">Nameless Squad</div>
+
+      <!-- Top menu links to sections on the same page -->
+      <nav class="nav-links" aria-label="Main navigation">
+        <a class="nav-link active" href="#top" data-link="top">Home</a>
+        <a class="nav-link" href="#haunted-spot" data-link="haunted-spot">Haunted Spot</a>
+        <a class="nav-link" href="#about-us" data-link="about-us">About us</a>
+        <a class="nav-link" href="#links" data-link="links">Links</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="Hero">
+      <div class="hero-inner">
+        <!-- Main message at the top of the page -->
+        <h1 class="hero-title">DISCOVER OUR GAME</h1>
+        <p class="hero-subtitle">A 2D top-down survival horror game</p>
+
+        <!-- Arrow that scrolls to the game section -->
+        <a class="hero-arrow" href="#haunted-spot" aria-label="Scroll to Haunted Spot section">
+          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <!-- Arrow drawing -->
+            <path d="M12 4v12" />
+            <path d="M7 13l5 5 5-5" />
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <section id="haunted-spot" class="section scroll-target">
+      <div class="section-inner">
+        <!-- Game section title -->
+        <h2 class="section-title-center game-section-title">Haunted Spot</h2>
+
+        <div class="game-split">
+          <!-- Game image -->
+          <div class="game-media">
+            <img class="game-image" src="./haunted-spot.png" alt="Haunted Spot key art" />
+          </div>
+
+          <!-- Game description -->
+          <div class="game-text">
+            <p class="game-paragraph">
+              Haunted Spot is an asymmetrical multiplayer top-down pixel-art game where a team faces a playable vampire and an AI-controlled ghost entity
+            </p>
+            <p class="game-paragraph">
+              Matches take place inside a haunted manor as the team completes tasks by interacting with objects to gather clues and unlock an escape route while avoiding the vampire
+            </p>
+            <p class="game-paragraph">
+              Combat is fast and lethal, with a two-shot kill system, and the ghost influences the pacing to keep tension high
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about-us" class="section scroll-target">
+      <div class="section-inner">
+        <!-- Team section title -->
+        <h2 class="section-title-center">About us</h2>
+
+        <!-- Team members list -->
+        <div class="team-grid" aria-label="Team members">
+          <article class="team-card">
+            <h3 class="team-name">Adrien</h3>
+            <p class="team-role">One of the lead Programmers and Github Manager</p>
+          </article>
+
+          <article class="team-card">
+            <h3 class="team-name">Julien</h3>
+            <p class="team-role">Lore narrator and Music composer</p>
+          </article>
+
+          <article class="team-card">
+            <h3 class="team-name">Marin</h3>
+            <p class="team-role">Website developer and responsible for marketing</p>
+          </article>
+
+          <article class="team-card">
+            <h3 class="team-name">Marwan</h3>
+            <p class="team-role">Group coordinator, lead programmer, responsible for core functionalities</p>
+          </article>
+
+          <!-- Last card centered for nicer layout -->
+          <article class="team-card team-card--center-last">
+            <h3 class="team-name">Naomi</h3>
+            <p class="team-role">Concept creator, gameplay and graphic designer, Lead game documenter</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="links" class="section scroll-target">
+      <div class="section-inner">
+        <!-- Download section -->
+        <h2 class="section-title-center">Game</h2>
+
+        <div class="action-area" aria-label="Game download">
+          <!-- Download button (not active yet) -->
+          <a class="action-button" href="#" aria-disabled="true">Download</a>
+          <p class="action-hint">This is a placeholder for the final build.</p>
+        </div>
+
+        <!-- Report section -->
+        <h2 class="section-title-center">Defense Report</h2>
+
+        <div class="action-area" aria-label="Defense report open">
+          <!-- Open the PDF in a new tab -->
+          <a class="action-button" href="./Defence-Repport-1.pdf" target="_blank" rel="noopener noreferrer">Open</a>
+          <p class="action-hint">Open the PDF defense report in your browser.</p>
+        </div>
+
+        <!-- Useful links section -->
+        <h2 class="section-title-center">External Resources</h2>
+
+        <div class="external-links" aria-label="External resources">
+          <a class="external-link" href="https://www.pygame.org/news" target="_blank" rel="noopener noreferrer">Pygame</a>
+          <a class="external-link" href="https://www.image-line.com/" target="_blank" rel="noopener noreferrer">FL Studio</a>
+          <a class="external-link" href="https://pixabay.com/fr/" target="_blank" rel="noopener noreferrer">Pixabay</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Get all menu links once, so we can update them later.
+    const links = Array.from(document.querySelectorAll(".nav-link"));
+
+    // Turn on the "active" style for one menu item, and turn it off for the others.
+    function setActiveByKey(key) {
+      links.forEach(a => a.classList.remove("active"));
+      const target = links.find(a => a.dataset.link === key);
+      if (target) target.classList.add("active");
+    }
+
+    // Pick the active menu item from the URL (so refresh / direct link works).
+    function syncFromHash() {
+      const hash = (window.location.hash || "").replace("#", "");
+      if (hash === "" || hash === "top") setActiveByKey("top");
+      else if (hash === "haunted-spot") setActiveByKey("haunted-spot");
+      else if (hash === "about-us") setActiveByKey("about-us");
+      else if (hash === "links") setActiveByKey("links");
+      else setActiveByKey("top");
+    }
+    // Set the correct active item when the page loads.
+    syncFromHash();
+
+    // Find the page sections we want to track.
+    const heroEl = document.querySelector(".hero");
+    const hauntedEl = document.getElementById("haunted-spot");
+    const aboutEl = document.getElementById("about-us");
+    const linksSectionEl = document.getElementById("links");
+
+    // List of sections (ignore any that are missing).
+    const sections = [
+      { key: "top", el: heroEl },
+      { key: "haunted-spot", el: hauntedEl },
+      { key: "about-us", el: aboutEl },
+      { key: "links", el: linksSectionEl }
+    ].filter(s => s.el);
+
+    // Get the height of the top bar (used to make the scroll selection feel right).
+    function headerHeight() {
+      const h = document.querySelector(".site-header");
+      return h ? h.getBoundingClientRect().height : 0;
+    }
+
+    // Small delay to avoid the menu changing too quickly right after a click.
+    let lockUntil = 0;
+
+    // Decide which section is the "current" one, based on what's closest to the middle of the screen.
+    function computeActiveKey() {
+      const hh = headerHeight();
+      const refY = hh + (window.innerHeight - hh) * 0.45;
+
+      let bestKey = "top";
+      let bestDist = Infinity;
+
+      for (const s of sections) {
+        const r = s.el.getBoundingClientRect();
+        const point = r.top + r.height * 0.33;
+        const d = Math.abs(point - refY);
+
+        if (d < bestDist) {
+          bestDist = d;
+          bestKey = s.key;
+        }
+      }
+      return bestKey;
+    }
+
+    // Make sure we don't update the menu too many times while scrolling.
+    let rafScheduled = false;
+
+    // When the user scrolls or changes window size, update the active menu item.
+    function onScrollOrResize() {
+      if (Date.now() < lockUntil) return;
+      if (rafScheduled) return;
+
+      rafScheduled = true;
+      requestAnimationFrame(() => {
+        rafScheduled = false;
+        if (Date.now() < lockUntil) return;
+        setActiveByKey(computeActiveKey());
+      });
+    }
+
+    // Listen for scrolling and resizing.
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+
+    // Run once at start.
+    onScrollOrResize();
+
+    // When a menu link is clicked, highlight it right away.
+    links.forEach(link => {
+      link.addEventListener("click", () => {
+        setActiveByKey(link.dataset.link);
+        lockUntil = Date.now() + 550;
+      });
+    });
+
+    // If the URL changes (back/forward), update the menu highlight.
+    window.addEventListener("hashchange", () => {
+      syncFromHash();
+      lockUntil = Date.now() + 300;
+    });
+
+    // Stop the fake "Download" link from doing anything when clicked.
+    const fakeAction = document.querySelector(".action-button[aria-disabled='true']");
+    if (fakeAction) {
+      fakeAction.addEventListener("click", (e) => e.preventDefault());
+    }
+  </script>
+</body>
+</html>

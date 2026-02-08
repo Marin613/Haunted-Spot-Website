@@ -1,0 +1,350 @@
+:root{
+  --bg: #000000;
+  --header: #1a1a1a;
+  --text: #ffffff;
+  --muted: rgba(255,255,255,0.72);
+  --border: rgba(255,255,255,0.12);
+  --underline-h: 2px;
+
+  --card: rgba(255,255,255,0.04);
+
+  --header-h: 58px;
+  --anchor-offset: 160px;
+  --after-hero-gap: 120px;
+}
+
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+
+body{
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "DotGothic16", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  padding-top: var(--header-h);
+}
+
+@media (prefers-reduced-motion: no-preference){
+  html{ scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; }
+}
+
+.scroll-target{
+  scroll-margin-top: var(--anchor-offset);
+}
+
+.site-header{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: var(--header);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.studio-name{
+  font-weight: 400;
+  letter-spacing: 0.6px;
+}
+
+.nav-links{
+  display: flex;
+  gap: 18px;
+}
+
+.nav-link{
+  position: relative;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 0;
+  letter-spacing: 0.2px;
+}
+
+.nav-link::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  height: var(--underline-h);
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 160ms ease;
+}
+
+.nav-link.active::after{ transform: scaleX(1); }
+.nav-link:hover{ opacity: 0.9; }
+
+.hero{
+  min-height: 70vh;
+  display: grid;
+  align-items: center;
+  padding-bottom: var(--after-hero-gap);
+}
+
+.hero-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 64px 18px 36px;
+  text-align: center;
+}
+
+.hero-title{
+  margin: 0 0 10px;
+  font-size: clamp(38px, 6vw, 64px);
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.hero-subtitle{
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 18px;
+}
+
+/* Hero arrow */
+.hero-arrow{
+  display: inline-grid;
+  place-items: center;
+  margin-top: 34px;
+  transform: translateY(8px);
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+}
+
+.hero-arrow:hover{ background: rgba(255,255,255,0.08); }
+
+.arrow-icon{
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  stroke-width: 2.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.section{
+  padding: 70px 0;
+  border-top: 1px solid var(--border);
+}
+
+.section-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 18px;
+}
+
+.section-title-center{
+  text-align: center;
+  margin-bottom: 28px;
+  font-size: clamp(28px, 4vw, 44px);
+  letter-spacing: 0.8px;
+}
+
+/* Game */
+.game-section-title{ margin-bottom: 22px; }
+
+.game-split{
+  display: flex;
+  gap: 22px;
+  align-items: stretch;
+}
+
+.game-media{
+  flex: 0 0 380px;
+  min-height: 340px;
+}
+
+.game-image{
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  object-fit: cover;
+  object-position: center;
+}
+
+.game-text{
+  flex: 1;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.game-paragraph{
+  margin: 0 0 14px;
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 18px;
+}
+
+/* Team */
+.team-grid{
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.team-card{
+  background: var(--card);
+  border:  1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.team-name{
+  margin: 0 0 8px;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+}
+
+.team-role{
+  margin: 0;
+  color: var(--muted);
+}
+
+.team-card--center-last{
+  grid-column: 1 / span 2;
+  justify-self: center;
+  width: min(520px, 100%);
+}
+
+/* Action buttons (Download/Open) */
+.action-area{
+  margin: -6px 0 18px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.action-button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--text);
+  text-decoration: none;
+  font-size: 18px;
+  letter-spacing: 0.3px;
+
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  user-select: none;
+}
+
+.action-button:hover{ background: rgba(255,255,255,0.08); }
+
+.action-hint{
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* External links */
+.external-links{
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.external-link{
+  color: var(--text);
+  text-decoration: none;
+  font-size: 18px;
+  letter-spacing: 0.3px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+}
+
+.external-link:hover{ background: rgba(255,255,255,0.08); }
+
+/* Responsive */
+@media (max-width: 900px){
+  :root{
+    --anchor-offset: 120px;
+    --after-hero-gap: 90px;
+  }
+
+  .game-split{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .game-media,
+  .game-text{
+    min-height: 0;
+  }
+
+  .game-media{
+    width: min(560px, 100%);
+    margin: 0 auto;
+  }
+
+  .game-image{
+    height: auto;
+    max-height: 460px;
+  }
+
+  .game-text{ display: block; }
+  .game-paragraph{ font-size: 17px; }
+}
+
+@media (max-width: 520px){
+  :root{
+    --anchor-offset: 100px;
+    --after-hero-gap: 70px;
+  }
+
+  .header-inner{
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links{ gap: 14px; }
+
+  .team-grid{ grid-template-columns: 1fr; }
+
+  .team-card--center-last{
+    grid-column: auto;
+    justify-self: stretch;
+    width: auto;
+  }
+
+  .hero-subtitle,
+  .game-paragraph,
+  .external-link,
+  .action-button{
+    font-size: 16px;
+  }
+}
