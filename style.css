@@ -118,7 +118,6 @@ body{
   font-size: 18px;
 }
 
-/* Hero arrow */
 .hero-arrow{
   display: inline-grid;
   place-items: center;
@@ -163,7 +162,6 @@ body{
   letter-spacing: 0.8px;
 }
 
-/* Game */
 .game-section-title{ margin-bottom: 22px; }
 
 .game-split{
@@ -188,6 +186,21 @@ body{
   object-position: center;
 }
 
+/* Video preview below the game description */
+.game-video-wrapper{
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.game-video{
+  width: 100%;
+  max-width: 860px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.3);
+}
+
 .game-text{
   flex: 1;
   min-height: 340px;
@@ -203,7 +216,6 @@ body{
   font-size: 18px;
 }
 
-/* Team */
 .team-grid{
   display: grid;
   gap: 14px;
@@ -268,7 +280,6 @@ body{
   text-align: center;
 }
 
-/* External links */
 .external-links{
   margin-top: 18px;
   display: grid;

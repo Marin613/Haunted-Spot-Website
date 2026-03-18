@@ -73,6 +73,14 @@
             </p>
           </div>
         </div>
+
+        <!-- Video preview -->
+        <div class="game-video-wrapper">
+          <video id="game-video" class="game-video" autoplay muted playsinline loop preload="auto">
+            <source src="./Video1.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
       </div>
     </section>
 
@@ -120,16 +128,22 @@
         <div class="action-area" aria-label="Game download">
           <!-- Download button (not active yet) -->
           <a class="action-button" href="#" aria-disabled="true">Download</a>
-          <p class="action-hint">This is a placeholder for the final build.</p>
         </div>
 
-        <!-- Report section -->
-        <h2 class="section-title-center">Defense Report</h2>
+        <!-- Defense Report 1 section -->
+        <h2 class="section-title-center">Defense Report 1</h2>
 
-        <div class="action-area" aria-label="Defense report open">
+        <div class="action-area" aria-label="Defense report 1 open">
           <!-- Open the PDF in a new tab -->
           <a class="action-button" href="./Defence-Repport-1.pdf" target="_blank" rel="noopener noreferrer">Open</a>
-          <p class="action-hint">Open the PDF defense report in your browser.</p>
+        </div>
+
+        <!-- Defense Report 2 section -->
+        <h2 class="section-title-center">Defense Report 2</h2>
+
+        <div class="action-area" aria-label="Defense report 2 open">
+          <!-- Open the PDF in a new tab -->
+          <a class="action-button" href="./Defence-Repport-2.pdf" target="_blank" rel="noopener noreferrer">Open</a>
         </div>
 
         <!-- Useful links section -->
@@ -193,14 +207,16 @@
     // Decide which section is the "current" one, based on what's closest to the middle of the screen.
     function computeActiveKey() {
       const hh = headerHeight();
-      const refY = hh + (window.innerHeight - hh) * 0.45;
+      // Move the reference point further down to delay switching to the next section.
+      const refY = hh + (window.innerHeight - hh) * 0.65;
 
       let bestKey = "top";
       let bestDist = Infinity;
 
       for (const s of sections) {
         const r = s.el.getBoundingClientRect();
-        const point = r.top + r.height * 0.33;
+        // Use a point lower in the section so the section feels "active" longer.
+        const point = r.top + r.height * 0.8;
         const d = Math.abs(point - refY);
 
         if (d < bestDist) {
@@ -253,6 +269,32 @@
     if (fakeAction) {
       fakeAction.addEventListener("click", (e) => e.preventDefault());
     }
+
+    // Autoplay & keep looping while the video is visible.
+    // We rely on the native `loop` attribute to repeat playback.
+    (() => {
+      const video = document.getElementById("game-video");
+      if (!video) return;
+
+      // Start/stop playback based on visibility.
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        },
+        { threshold: 0.4 }
+      );
+
+      // Ensure looping even if the browser doesn't restart automatically.
+      video.addEventListener("ended", () => {
+        video.play().catch(() => {});
+      });
+
+      observer.observe(video);
+    })();
   </script>
 </body>
 </html>
