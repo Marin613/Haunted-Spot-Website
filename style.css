@@ -318,6 +318,13 @@ body{
   image-rendering: pixelated;
   pointer-events: none;
   user-select: none;
+  opacity: 0;
+  transition: opacity 180ms ease-in-out;
+  will-change: opacity;
+}
+
+.walk-side-art.is-visible{
+  opacity: 1;
 }
 
 .walk-frame{

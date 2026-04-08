@@ -120,9 +120,11 @@
 
         <div class="vampire-walk-container">
           <img class="walk-side-art walk-frame walk-frame-left" src="frame_left.png" alt="" aria-hidden="true" />
-          <img class="walk-side-art walk-door walk-door-left" src="door_left.png" alt="" aria-hidden="true" />
+          <img class="walk-side-art walk-door walk-door-open walk-door-left" src="door_opened_left.png" alt="" aria-hidden="true" />
+          <img class="walk-side-art walk-door walk-door-closed walk-door-left is-visible" src="door_closed_left.png" alt="" aria-hidden="true" />
           <img class="walk-side-art walk-frame walk-frame-right" src="frame_right.png" alt="" aria-hidden="true" />
-          <img class="walk-side-art walk-door walk-door-right" src="door_right.png" alt="" aria-hidden="true" />
+          <img class="walk-side-art walk-door walk-door-open walk-door-right" src="door_opened_right.png" alt="" aria-hidden="true" />
+          <img class="walk-side-art walk-door walk-door-closed walk-door-right is-visible" src="door_closed_right.png" alt="" aria-hidden="true" />
           <img id="flee-1" class="character-img fleeing" src="annie-right-1.png" alt="Fleeing character" />
           <img id="flee-2" class="character-img fleeing" src="felix-right-1.png" alt="Fleeing character" />
           <img id="flee-3" class="character-img fleeing" src="fiora-right-1.png" alt="Fleeing character" />
@@ -315,9 +317,16 @@
         .filter(Boolean);
       
       if (!sprites.length) return;
+      const vampireSprite = sprites.find(sprite => sprite.prefix === "vampire");
 
       const walkContainer = document.querySelector(".vampire-walk-container");
       if (!walkContainer) return;
+      const leftFrame = walkContainer.querySelector(".walk-frame-left");
+      const rightFrame = walkContainer.querySelector(".walk-frame-right");
+      const leftOpenDoor = walkContainer.querySelector(".walk-door-open.walk-door-left");
+      const rightOpenDoor = walkContainer.querySelector(".walk-door-open.walk-door-right");
+      const leftClosedDoor = walkContainer.querySelector(".walk-door-closed.walk-door-left");
+      const rightClosedDoor = walkContainer.querySelector(".walk-door-closed.walk-door-right");
 
       // Animation state
       let frameIndex = 0;
@@ -328,14 +337,57 @@
       // Speed settings
       const FRAME_SPEED = 50; // ms per frame
       const MOVE_SPEED = 10; // ms per physics tick
-      const PIXELS_PER_TICK = 8; // pixels moved per tick
+      const PIXELS_PER_TICK = 7; // pixels moved per tick
       const PAUSE_DURATION = 300; // ms pause before reversing
-      const OFFSCREEN_MARGIN = 80;
+      const OFFSCREEN_MARGIN = 130;
       const LEFT_HIDE_OFFSET = 34;
       const RIGHT_HIDE_OFFSET = 32;
+      const DOOR_OPEN_DISTANCE = 88;
+      const DOOR_CLOSE_DISTANCE = 54;
+      const DOOR_EXIT_CLOSE_DISTANCE = 80;
 
       function getTrackWidth() {
         return walkContainer.getBoundingClientRect().width || walkContainer.clientWidth || 0;
+      }
+
+      function setDoorState(side, isOpen) {
+        const frame = side === "left" ? leftFrame : rightFrame;
+        const openDoor = side === "left" ? leftOpenDoor : rightOpenDoor;
+        const closedDoor = side === "left" ? leftClosedDoor : rightClosedDoor;
+
+        if (frame) frame.classList.toggle("is-visible", isOpen);
+        if (openDoor) openDoor.classList.toggle("is-visible", isOpen);
+        if (closedDoor) closedDoor.classList.toggle("is-visible", !isOpen);
+      }
+
+      function closeAllDoors() {
+        setDoorState("left", false);
+        setDoorState("right", false);
+      }
+
+      function updateDoorState(formationLeft, formationRight, trackWidth) {
+        if (!vampireSprite) {
+          const shouldOpenLeft = formationLeft <= DOOR_OPEN_DISTANCE;
+          const shouldOpenRight = formationRight >= trackWidth - DOOR_OPEN_DISTANCE;
+          setDoorState("left", shouldOpenLeft);
+          setDoorState("right", shouldOpenRight);
+          return;
+        }
+
+        const vampireWidth = vampireSprite.el.getBoundingClientRect().width || vampireSprite.el.offsetWidth || 80;
+        const vampireLeft = getSpriteX(vampireSprite);
+        const vampireRight = vampireLeft + vampireWidth;
+
+        const shouldOpenLeft = direction === 1
+          ? vampireLeft <= DOOR_EXIT_CLOSE_DISTANCE
+          : formationLeft <= DOOR_OPEN_DISTANCE && vampireRight > DOOR_CLOSE_DISTANCE;
+
+        const shouldOpenRight = direction === 1
+          ? formationRight >= trackWidth - DOOR_OPEN_DISTANCE && vampireLeft < trackWidth - DOOR_CLOSE_DISTANCE
+          : vampireRight >= trackWidth - DOOR_EXIT_CLOSE_DISTANCE;
+
+        setDoorState("left", shouldOpenLeft);
+        setDoorState("right", shouldOpenRight);
       }
 
       function getFormationMetrics() {
@@ -404,6 +456,7 @@
 
       renderSprites();
       updateSpriteVisibility(getTrackWidth());
+      closeAllDoors();
 
       // Update sprite frames and direction
       const updateFrames = () => {
@@ -429,6 +482,7 @@
 
         // Update positions
         renderSprites();
+        updateDoorState(formationLeft, formationRight, trackWidth);
 
         // Pause only after the whole formation has fully left the character track.
         if (direction === 1 && formationLeft >= trackWidth + OFFSCREEN_MARGIN) {
@@ -450,6 +504,7 @@
         isMoving = false;
         frameIndex = 0;
         clearTimeout(pauseTimer);
+        closeAllDoors();
         sprites.forEach(({ el }) => {
           el.style.opacity = '0';
         });
