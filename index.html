@@ -117,6 +117,18 @@
             <p class="team-role">Concept creator, gameplay and graphic designer, Lead game documenter</p>
           </article>
         </div>
+
+        <div class="vampire-walk-container">
+          <img class="walk-side-art walk-frame walk-frame-left" src="frame_left.png" alt="" aria-hidden="true" />
+          <img class="walk-side-art walk-door walk-door-left" src="door_left.png" alt="" aria-hidden="true" />
+          <img class="walk-side-art walk-frame walk-frame-right" src="frame_right.png" alt="" aria-hidden="true" />
+          <img class="walk-side-art walk-door walk-door-right" src="door_right.png" alt="" aria-hidden="true" />
+          <img id="flee-1" class="character-img fleeing" src="annie-right-1.png" alt="Fleeing character" />
+          <img id="flee-2" class="character-img fleeing" src="felix-right-1.png" alt="Fleeing character" />
+          <img id="flee-3" class="character-img fleeing" src="fiora-right-1.png" alt="Fleeing character" />
+          <img id="flee-4" class="character-img fleeing" src="danzo-right-1.png" alt="Fleeing character" />
+          <img id="vampire-img" class="character-img" src="vampire-right-1.png" alt="Vampire walking" />
+        </div>
       </div>
     </section>
 
@@ -161,12 +173,25 @@
   <script>
     // Get all menu links once, so we can update them later.
     const links = Array.from(document.querySelectorAll(".nav-link"));
+    const heroArrow = document.querySelector(".hero-arrow");
 
     // Turn on the "active" style for one menu item, and turn it off for the others.
     function setActiveByKey(key) {
       links.forEach(a => a.classList.remove("active"));
       const target = links.find(a => a.dataset.link === key);
       if (target) target.classList.add("active");
+    }
+
+    function scrollToSection(key, extraOffset = 0) {
+      const section = sections.find(s => s.key === key);
+      if (!section) return;
+
+      const hh = headerHeight();
+      const sectionTop = window.scrollY + section.el.getBoundingClientRect().top;
+      const targetY = Math.max(0, sectionTop - hh + extraOffset);
+
+      window.scrollTo({ top: targetY, behavior: "smooth" });
+      window.history.replaceState(null, "", key === "top" ? "#top" : `#${key}`);
     }
 
     // Pick the active menu item from the URL (so refresh / direct link works).
@@ -204,26 +229,21 @@
     // Small delay to avoid the menu changing too quickly right after a click.
     let lockUntil = 0;
 
-    // Decide which section is the "current" one, based on what's closest to the middle of the screen.
+    // Decide which section is the current one based on how far we have scrolled.
     function computeActiveKey() {
       const hh = headerHeight();
-      // Move the reference point further down to delay switching to the next section.
-      const refY = hh + (window.innerHeight - hh) * 0.65;
-
-      let bestKey = "top";
-      let bestDist = Infinity;
+      const scrollMarker = window.scrollY + hh + 24;
+      let bestKey = sections[0]?.key || "top";
 
       for (const s of sections) {
-        const r = s.el.getBoundingClientRect();
-        // Use a point lower in the section so the section feels "active" longer.
-        const point = r.top + r.height * 0.8;
-        const d = Math.abs(point - refY);
-
-        if (d < bestDist) {
-          bestDist = d;
+        const top = window.scrollY + s.el.getBoundingClientRect().top;
+        if (scrollMarker >= top) {
           bestKey = s.key;
+        } else {
+          break;
         }
       }
+
       return bestKey;
     }
 
@@ -252,17 +272,202 @@
 
     // When a menu link is clicked, highlight it right away.
     links.forEach(link => {
-      link.addEventListener("click", () => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
         setActiveByKey(link.dataset.link);
         lockUntil = Date.now() + 550;
+        scrollToSection(link.dataset.link, link.dataset.link === "top" ? 0 : 56);
       });
     });
+
+    // Treat the hero arrow like a navigation click so the menu state stays stable.
+    if (heroArrow) {
+      heroArrow.addEventListener("click", (event) => {
+        event.preventDefault();
+        setActiveByKey("haunted-spot");
+        lockUntil = Date.now() + 550;
+        scrollToSection("haunted-spot", 56);
+      });
+    }
 
     // If the URL changes (back/forward), update the menu highlight.
     window.addEventListener("hashchange", () => {
       syncFromHash();
       lockUntil = Date.now() + 300;
     });
+
+    // Vampire walking animation
+    (() => {
+      const characters = [
+        { id: 'flee-1', prefix: 'annie', offsetX: 0 },
+        { id: 'flee-2', prefix: 'felix', offsetX: -60 },
+        { id: 'flee-3', prefix: 'fiora', offsetX: -120 },
+        { id: 'flee-4', prefix: 'danzo', offsetX: -180 },
+        { id: 'vampire-img', prefix: 'vampire', offsetX: -340 }
+      ];
+
+      // Get all sprite elements
+      const sprites = characters
+        .map(({ id, prefix, offsetX }) => {
+          const el = document.getElementById(id);
+          return el ? { el, prefix, offsetX } : null;
+        })
+        .filter(Boolean);
+      
+      if (!sprites.length) return;
+
+      const walkContainer = document.querySelector(".vampire-walk-container");
+      if (!walkContainer) return;
+
+      // Animation state
+      let frameIndex = 0;
+      let direction = 1; // 1 = right, -1 = left
+      let isMoving = true;
+      let pauseTimer = null;
+
+      // Speed settings
+      const FRAME_SPEED = 50; // ms per frame
+      const MOVE_SPEED = 10; // ms per physics tick
+      const PIXELS_PER_TICK = 8; // pixels moved per tick
+      const PAUSE_DURATION = 300; // ms pause before reversing
+      const OFFSCREEN_MARGIN = 80;
+      const LEFT_HIDE_OFFSET = 34;
+      const RIGHT_HIDE_OFFSET = 32;
+
+      function getTrackWidth() {
+        return walkContainer.getBoundingClientRect().width || walkContainer.clientWidth || 0;
+      }
+
+      function getFormationMetrics() {
+        let leftDelta = Infinity;
+        let rightDelta = -Infinity;
+
+        sprites.forEach(({ el, offsetX }) => {
+          const width = el.getBoundingClientRect().width || el.offsetWidth || 80;
+
+          leftDelta = Math.min(leftDelta, offsetX);
+          rightDelta = Math.max(rightDelta, offsetX + width);
+        });
+
+        return {
+          baseLeft: leftDelta,
+          formationWidth: rightDelta - leftDelta
+        };
+      }
+
+      function getStartPosition(nextDirection = direction) {
+        const trackWidth = getTrackWidth();
+        const { formationWidth } = getFormationMetrics();
+
+        if (nextDirection === 1) {
+          return -formationWidth - OFFSCREEN_MARGIN;
+        }
+
+        return trackWidth + OFFSCREEN_MARGIN;
+      }
+
+      let position = getStartPosition(direction);
+
+      function getSpriteX(sprite) {
+        const width = sprite.el.getBoundingClientRect().width || sprite.el.offsetWidth || 80;
+        const { baseLeft, formationWidth } = getFormationMetrics();
+        const normalizedOffset = sprite.offsetX - baseLeft;
+
+        if (direction === 1) {
+          return position + normalizedOffset;
+        }
+
+        return position + formationWidth - normalizedOffset - width;
+      }
+
+      function renderSprites() {
+        sprites.forEach((sprite) => {
+          const x = getSpriteX(sprite);
+          sprite.el.style.left = x + 'px';
+        });
+      }
+
+      function updateSpriteVisibility(trackWidth) {
+        sprites.forEach((sprite) => {
+          const { el } = sprite;
+          const width = el.getBoundingClientRect().width || el.offsetWidth || 80;
+          const x = getSpriteX(sprite);
+
+          if (x + width <= LEFT_HIDE_OFFSET || x >= trackWidth - RIGHT_HIDE_OFFSET) {
+            el.style.opacity = '0';
+          }
+          else {
+            el.style.opacity = '1';
+          }
+        });
+      }
+
+      renderSprites();
+      updateSpriteVisibility(getTrackWidth());
+
+      // Update sprite frames and direction
+      const updateFrames = () => {
+        const frameNumber = (frameIndex % 4) + 1;
+        const directionStr = direction === 1 ? 'right' : 'left';
+        
+        sprites.forEach(({ el, prefix }) => {
+          el.src = `${prefix}-${directionStr}-${frameNumber}.png`;
+        });
+        
+        frameIndex++;
+      };
+
+      // Move all sprites with offsets
+      const moveSprites = () => {
+        if (!isMoving) return;
+
+        position += PIXELS_PER_TICK * direction;
+        const trackWidth = getTrackWidth();
+        const { formationWidth } = getFormationMetrics();
+        const formationLeft = position;
+        const formationRight = position + formationWidth;
+
+        // Update positions
+        renderSprites();
+
+        // Pause only after the whole formation has fully left the character track.
+        if (direction === 1 && formationLeft >= trackWidth + OFFSCREEN_MARGIN) {
+          pause();
+          return;
+        }
+
+        if (direction === -1 && formationRight <= -OFFSCREEN_MARGIN) {
+          pause();
+          return;
+        }
+
+        // Hide sprites that are off-screen
+        updateSpriteVisibility(trackWidth);
+      };
+
+      // Pause and reverse direction
+      const pause = () => {
+        isMoving = false;
+        frameIndex = 0;
+        clearTimeout(pauseTimer);
+        sprites.forEach(({ el }) => {
+          el.style.opacity = '0';
+        });
+        
+        pauseTimer = setTimeout(() => {
+          direction *= -1;
+          // Reset position so the full group starts equally far off-screen on both sides.
+          position = getStartPosition(direction);
+          renderSprites();
+          updateSpriteVisibility(getTrackWidth());
+          isMoving = true;
+        }, PAUSE_DURATION);
+      };
+
+      // Animation loops
+      setInterval(updateFrames, FRAME_SPEED);
+      setInterval(moveSprites, MOVE_SPEED);
+    })();
 
     // Stop the fake "Download" link from doing anything when clicked.
     const fakeAction = document.querySelector(".action-button[aria-disabled='true']");

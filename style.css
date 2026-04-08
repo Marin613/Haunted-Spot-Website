@@ -22,6 +22,7 @@ body{
   color: var(--text);
   font-family: "DotGothic16", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   padding-top: var(--header-h);
+  overflow-x: hidden;
 }
 
 @media (prefers-reduced-motion: no-preference){
@@ -147,6 +148,7 @@ body{
 .section{
   padding: 70px 0;
   border-top: 1px solid var(--border);
+  overflow: visible;
 }
 
 .section-inner{
@@ -299,6 +301,64 @@ body{
 }
 
 .external-link:hover{ background: rgba(255,255,255,0.08); }
+
+/* Vampire walking animation */
+.vampire-walk-container{
+  position: relative;
+  height: 100px;
+  margin: 12px 0 28px 0;
+  overflow: visible;
+  width: 100%;
+}
+
+.walk-side-art{
+  position: absolute;
+  bottom: 0;
+  width: auto;
+  image-rendering: pixelated;
+  pointer-events: none;
+  user-select: none;
+}
+
+.walk-frame{
+  z-index: 0;
+  height: 122px;
+}
+
+.walk-door{
+  z-index: 4;
+  height: 122px;
+}
+
+.walk-frame-left,
+.walk-door-left{
+  left: -56px;
+}
+
+.walk-frame-right,
+.walk-door-right{
+  right: -56px;
+}
+
+.character-img{
+  width: auto;
+  height: 70px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  image-rendering: pixelated;
+  z-index: 2;
+}
+
+.fleeing{
+  z-index: 2;
+  transform: scale(0.92);
+}
+
+#vampire-img{
+  z-index: 3;
+  height: 84px;
+}
 
 /* Responsive */
 @media (max-width: 900px){
